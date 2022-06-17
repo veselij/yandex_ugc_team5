@@ -45,10 +45,7 @@ subgraph Architecture [ ]
     subgraph Analytics [ ]
         style Analytics fill:#FCE8FC
         api-backend(\n\n\n API backend \n\n\n\n)
-        process_likes("Process likes#nbsp; #nbsp;#nbsp; #nbsp;#nbsp; #nbsp;")
-        process_comments(Process comments)
         process_film_ws(Process watch status)
-        process_bookmarks(Process bookmarks)
         kafka[(Kafka \n store)]
         AETL([Analytics ETL])
         AnalyticDb[(Analytics \n storage)]
@@ -98,15 +95,9 @@ subgraph Architecture [ ]
     ETL --put/update films --> fast-api-elastic
 
     %% users content
-    User --send likes-->api-backend
-    User --send comments-->api-backend
     User --send watch film status-->api-backend
-    User --send bookmark-->api-backend
     api-backend --validate token--> flask-api
-    api-backend --> process_likes --put ---> kafka
-    api-backend --> process_comments --put ---> kafka
     api-backend --> process_film_ws --put ---> kafka
-    api-backend --> process_bookmarks --put ---> kafka
     AETL --put data--> AnalyticDb
     AETL --get data--> kafka
 
@@ -116,7 +107,7 @@ end
     linkStyle 6,7,8 stroke-width:4px,fill:none,stroke:blue;
     linkStyle 9,10,11 stroke-width:4px,fill:none,stroke:purple;
     linkStyle 12,13,14,15,17,32 stroke-width:4px,fill:none,stroke:green;
-    linkStyle 26,27,41,42 stroke-width:4px,fill:none,stroke:orange;
+    linkStyle 26,27,32,33 stroke-width:4px,fill:none,stroke:orange;
     linkStyle default stroke-width:4px,fill:none,stroke:black;
 
 ```
