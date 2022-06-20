@@ -106,7 +106,7 @@ end
     linkStyle 0,1,2,3,4,5 stroke-width:4px,fill:none,stroke:red;
     linkStyle 6,7,8 stroke-width:4px,fill:none,stroke:blue;
     linkStyle 9,10,11 stroke-width:4px,fill:none,stroke:purple;
-    linkStyle 12,13,14,15,17,32 stroke-width:4px,fill:none,stroke:green;
+    linkStyle 12,13,14,15,17,29 stroke-width:4px,fill:none,stroke:green;
     linkStyle 26,27,32,33 stroke-width:4px,fill:none,stroke:orange;
     linkStyle default stroke-width:4px,fill:none,stroke:black;
 
