@@ -49,6 +49,9 @@ subgraph Architecture [ ]
         kafka[(Kafka \n store)]
         AETL([Analytics ETL])
         AnalyticDb[(Analytics \n storage)]
+        check_token(extract token)
+        check_cache{exists}
+        token_redis[(redis token cache)]
     end
 
 
@@ -96,8 +99,14 @@ subgraph Architecture [ ]
 
     %% users content
     User --send watch film status-->api-backend
-    api-backend --validate token--> flask-api
-    api-backend --> process_film_ws --put ---> kafka
+    api-backend --> check_token
+    check_token --check in cache--> token_redis
+    token_redis --> check_cache
+    check_cache --OK autorize--> api-backend
+    check_cache --NO --> flask-api
+    flask-api --put to cache--> token_redis
+
+    api-backend ---> process_film_ws --put ---> kafka
     AETL --put data--> AnalyticDb
     AETL --get data--> kafka
 
@@ -106,8 +115,8 @@ end
     linkStyle 0,1,2,3,4,5 stroke-width:4px,fill:none,stroke:red;
     linkStyle 6,7,8 stroke-width:4px,fill:none,stroke:blue;
     linkStyle 9,10,11 stroke-width:4px,fill:none,stroke:purple;
-    linkStyle 12,13,14,15,17,29 stroke-width:4px,fill:none,stroke:green;
-    linkStyle 26,27,32,33 stroke-width:4px,fill:none,stroke:orange;
+    linkStyle 12,13,14,15,17,29,30,31,32,33,34 stroke-width:4px,fill:none,stroke:green;
+    linkStyle 26,27,37,38 stroke-width:4px,fill:none,stroke:orange;
     linkStyle default stroke-width:4px,fill:none,stroke:black;
 
 ```

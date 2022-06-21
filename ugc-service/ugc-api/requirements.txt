@@ -1,0 +1,6 @@
+wemake-python-styleguide
+fastapi
+orjson
+black
+pydantic
+uvicorn
