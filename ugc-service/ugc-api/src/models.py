@@ -1,3 +1,5 @@
+from uuid import UUID
+
 import orjson
 from pydantic import BaseModel
 
@@ -11,6 +13,6 @@ class FilmWatchTimestamp(BaseModel):
         json_loads = orjson.loads
         json_dumps = orjson_dumps
 
-    user_id: str
-    film_id: str
+    user_id: UUID
+    film_id: UUID
     film_timestamp: int

@@ -1,0 +1,151 @@
+version: '3.5'
+services:
+  zookeeper_kafka:
+    image: confluentinc/cp-zookeeper:7.0.1
+    container_name: zookeeper_kafka
+    networks:
+      - backend_nw
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+
+  broker:
+    image: confluentinc/cp-kafka:7.0.1
+    container_name: broker
+    networks:
+      - backend_nw
+    expose:
+      - 9092
+      - 29092
+    depends_on:
+      - zookeeper_kafka
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper_kafka:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_INTERNAL:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:9092,PLAINTEXT_INTERNAL://localhost:29092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+      CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: broker:9092
+    healthcheck:
+      test: nc -z localhost 9092 || exit -1
+      start_period: 15s
+      interval: 5s
+      timeout: 10s
+      retries: 20
+
+  kafka-setup:
+    image: confluentinc/cp-kafka:7.0.1
+    hostname: kafka-setup
+    container_name: kafka-setup
+    networks:
+      - backend_nw
+    depends_on:
+      broker:
+        condition: service_healthy
+    command: "bash -c 'echo Waiting for Kafka to be ready... && \
+                       kafka-topics --create --bootstrap-server broker:9092 --partitions 4 --topic movies' "
+
+  zookeeper:
+    image: zookeeper:3.5
+    container_name: zookeeper
+    hostname: zookeeper
+    networks:
+      - backend_nw
+
+  clickhouse-node1:
+    container_name: clickhouse-node1
+    build:
+      context: .
+      dockerfile: ./click_house_config/Dockerfile.cl1
+    hostname: clickhouse-node1
+    networks:
+      - backend_nw
+    ports:
+      - "8123:8123"
+      - "9000:9000"
+    expose:
+      - 9009
+    volumes:
+      - ./click_house_config/node1:/etc/clickhouse-server
+    depends_on:
+      - zookeeper 
+      - kafka-setup
+
+  clickhouse-node2:
+    image: yandex/clickhouse-server
+    container_name: clickhouse-node2
+    hostname: clickhouse-node2
+    networks:
+      - backend_nw
+    expose:
+      - 9009
+    volumes:
+      - ./click_house_config/node2:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+      - kafka-setup
+
+  clickhouse-node3:
+    build:
+      context: .
+      dockerfile: ./click_house_config/Dockerfile.cl3
+    container_name: clickhouse-node3
+    hostname: clickhouse-node3
+    networks:
+      - backend_nw
+    expose:
+      - 9009
+    volumes:
+      - ./click_house_config/node3:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+      - kafka-setup
+
+  clickhouse-node4:
+    image: yandex/clickhouse-server
+    container_name: clickhouse-node4
+    hostname: clickhouse-node4
+    networks:
+      - backend_nw
+    expose:
+      - 9009
+    volumes:
+      - ./click_house_config/node4:/etc/clickhouse-server
+    depends_on:
+      - zookeeper
+      - kafka-setup
+
+  redis:
+    image: redis:6.2.6
+    container_name: redis
+    networks:
+      - backend_nw
+    expose:
+      - 6379
+
+  film_watch:
+    container_name: film_watch
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    networks:
+      - backend_nw
+    volumes:
+      - code_api_film_watch:/code
+    env_file:
+      - .env
+    entrypoint: 
+      - entrypoint_fastapi.sh
+    ports:
+      - 8000:8000
+    depends_on:
+      - redis
+      - kafka-setup
+volumes:
+  code_api_film_watch:
+
+networks:
+  backend_nw:
+    driver: bridge
