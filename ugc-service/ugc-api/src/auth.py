@@ -1,4 +1,5 @@
 import httpx
+import jwt
 from fastapi import HTTPException
 from fastapi.security.http import HTTPBearer
 from starlette.requests import Request
@@ -11,25 +12,26 @@ from db.redis import get_redis
 
 
 class TokenCheck(HTTPBearer):
-    async def __call__(self, request: Request) -> bool:
+    async def __call__(self, request: Request) -> str:
         credentials = await super().__call__(request)
         if not credentials:
-            return False
+            raise HTTPException(httpx.codes.UNAUTHORIZED)
         if config.NO_AUTH:
-            return True
+            return config.TEST_UUID
         cache_provider = await get_redis()
-        cache = Cache(*cache_provider)   # type: ignore
+        cache = Cache(*cache_provider)  # type: ignore
         token = credentials.credentials
-        if await cache.get_obj_from_cache(str(token)):
-            return True
-        else:
-            user_roles_resonse = await self.send_request_to_auth(token)
-            if user_roles_resonse is None:
-                exception = AuthExceptionError("Auth servier not available")
-                config.logging.exception(exception)
-                raise exception
-            await cache.put_obj_to_cache(token, "token")
-            return True
+        user_id = await cache.get_obj_from_cache(str(token))
+        if user_id:
+            return str(user_id)
+        user_id = jwt.decode(token, options={"verify_signature": False})["sub"]
+        user_roles_resonse = await self.send_request_to_auth(token)
+        if user_roles_resonse is None:
+            exception = AuthExceptionError("Auth servier not available")
+            config.logging.exception(exception)
+            raise exception
+        await cache.put_obj_to_cache(token, user_id)
+        return user_id
 
     @backoff_async(
         config.logger,
