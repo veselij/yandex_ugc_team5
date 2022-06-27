@@ -14,7 +14,8 @@ router = APIRouter()
     description="Receives film watch timestamp",
 )
 async def recieve_film_timestamp(
-    film_timestamp: FilmWatchTimestamp, token: bool = Depends(TokenCheck())
+    film_timestamp: FilmWatchTimestamp, user_id: str = Depends(TokenCheck())
 ):
+    film_timestamp.user_id = user_id
     await send_to_kafka(film_timestamp)
     return

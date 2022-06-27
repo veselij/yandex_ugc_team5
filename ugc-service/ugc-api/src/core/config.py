@@ -21,6 +21,7 @@ KAFKA_BROKER_PORT = int(os.getenv("KAFKA_BROKER_PORT", 29092))
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "movies")
 
 NO_AUTH = os.getenv("NO_AUTH", "True") == "True"
+TEST_UUID = "1ef50a24-dff0-4b69-9351-2936f098825d"
 
 logger = logging.getLogger(__name__)
 formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")

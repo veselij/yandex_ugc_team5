@@ -3,7 +3,6 @@ from uuid import uuid4
 
 films_data = [
     {
-        "user_id": str(uuid4()),
         "film_id": str(uuid4()),
         "film_timestamp": random.randint(1, 1000),
     }
