@@ -1,4 +1,5 @@
 import aioredis
+import sentry_sdk
 import uvicorn
 from fastapi.applications import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -7,6 +8,8 @@ from kafka import KafkaProducer
 from api.v1.films import router
 from core import config
 from db import kafka, redis
+
+sentry_sdk.init(dsn=config.SENTRY_DSN, traces_sample_rate=1)
 
 app = FastAPI(
     title=config.PROJECT_NAME,
