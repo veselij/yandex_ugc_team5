@@ -1,5 +1,6 @@
 import aioredis
 import motor.motor_asyncio
+import sentry_sdk
 import uvicorn
 from fastapi.applications import FastAPI
 from fastapi.responses import ORJSONResponse
@@ -11,8 +12,10 @@ from api.v1.likes import router as likes
 from api.v1.reviews import router as reviews
 from api.v1.reviews_likes import router as reviews_likes
 from core import config
-from db import kafka, redis, mongodb
-from utils.app_exceptions import app_exception_handler, AppExceptionCase
+from db import kafka, mongodb, redis
+from utils.app_exceptions import AppExceptionCase, app_exception_handler
+
+sentry_sdk.init(dsn=config.SENTRY_DSN, traces_sample_rate=1)
 
 app = FastAPI(
     title=config.PROJECT_NAME,
