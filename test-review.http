@@ -1,0 +1,29 @@
+### create
+POST http://127.0.0.1:8000/api/v1/review/1
+Content-Type: application/json
+Authorization: Bearer test
+
+{
+  "text": "test"
+}
+
+### by movie and user
+GET http://127.0.0.1:8000/api/v1/review/1/user
+Content-Type: application/json
+Authorization: Bearer test
+
+### by user
+GET http://127.0.0.1:8000/api/v1/review
+Content-Type: application/json
+Authorization: Bearer test
+
+### by movie
+GET http://127.0.0.1:8000/api/v1/review/1
+Content-Type: application/json
+
+### delete
+DELETE http://127.0.0.1:8000/api/v1/like/1
+Content-Type: application/json
+Authorization: Bearer test
+
+

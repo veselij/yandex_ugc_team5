@@ -1,0 +1,294 @@
+version: "3.9"
+
+services:
+  mongors1n1:
+    container_name: mongors1n1
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - rs1n1:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongors1n2:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongors1n2:
+    container_name: mongors1n2
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - "27027:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - rs1n2:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongors1n2:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongors1n3:
+    container_name: mongors1n3
+    image: mongo
+    command: mongod --shardsvr --replSet mongors1 --dbpath /data/db --port 27017
+    ports:
+      - "27037:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - rs1n3:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongors1n3:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongors2n1:
+    container_name: mongors2n1
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - "27047:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - rs2n1:/data/db
+    #      - ./deploy/mongodb/shard2:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongors2n1:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongors2n2:
+    container_name: mongors2n2
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - "27057:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - rs2n2:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongors2n2:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongors2n3:
+    container_name: mongors2n3
+    image: mongo
+    command: mongod --shardsvr --replSet mongors2 --dbpath /data/db --port 27017
+    ports:
+      - "27067:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - rs2n3:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongors2n3:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongocfg1:
+    container_name: mongocfg1
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    ports:
+      - "27018:27017"
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - cfg1:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongocfg1:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongocfg2:
+    container_name: mongocfg2
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - cfg2:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongocfg2:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongocfg3:
+    container_name: mongocfg3
+    image: mongo
+    command: mongod --configsvr --replSet mongors1conf --dbpath /data/db --port 27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - cfg3:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongocfg3:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongos1:
+    container_name: mongos1
+    image: mongo
+    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    depends_on:
+      init-cgf:
+        condition: service_completed_successfully
+    ports:
+      - 27019:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongos1:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongos1:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  mongos2:
+    container_name: mongos2
+    image: mongo
+    command: mongos --configdb mongors1conf/mongocfg1:27017,mongocfg2:27017,mongocfg3:27017 --port 27017 --bind_ip_all
+    depends_on:
+      init-cgf:
+        condition: service_completed_successfully
+    ports:
+      - 27020:27017
+    expose:
+      - "27017"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - mongos2:/data/db
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo mongos2:27017/test --quiet
+      interval: 10s
+      timeout: 10s
+      retries: 5
+    networks:
+      - backend_nw
+
+  init-cgf:
+    image: mongo
+    restart: "no"
+    volumes:
+      - ./deploy/mongodb/:/deploy
+    depends_on:
+      mongocfg1:
+        condition: service_healthy
+      mongocfg2:
+        condition: service_healthy
+      mongocfg3:
+        condition: service_healthy
+    command: >
+      sh -c "mongosh --host mongocfg1:27017 < ./deploy/config/init.js"
+    networks:
+      - backend_nw
+
+  init-shard:
+    image: mongo
+    restart: "no"
+    volumes:
+      - ./deploy/mongodb/:/deploy
+    depends_on:
+      init-cgf:
+        condition: service_completed_successfully
+      mongors1n1:
+        condition: service_healthy
+      mongors1n2:
+        condition: service_healthy
+      mongors1n3:
+        condition: service_healthy
+      mongors2n1:
+        condition: service_healthy
+      mongors2n2:
+        condition: service_healthy
+      mongors2n3:
+        condition: service_healthy
+    command: >
+      sh -c "mongosh --host mongors1n1:27017 < ./deploy/shard1/init.js && 
+             mongosh --host mongors2n1:27017 < ./deploy/shard2/init.js"
+    networks:
+      - backend_nw
+
+  init-mongos:
+    image: mongo
+    restart: "no"
+    volumes:
+      - ./deploy/mongodb/:/deploy
+    depends_on:
+      init-cgf:
+        condition: service_completed_successfully
+      init-shard:
+        condition: service_completed_successfully
+      mongos1:
+        condition: service_healthy
+      mongos2:
+        condition: service_healthy
+    command: >
+      sh -c "mongosh --host mongos1:27017 < ./deploy/mongos/init.js"
+    networks:
+      - backend_nw
+
+
+volumes:
+  rs1n1:
+  rs1n2:
+  rs1n3:
+  rs2n1:
+  rs2n2:
+  rs2n3:
+  cfg1:
+  cfg2:
+  cfg3:
+  mongos1:
+  mongos2:
+
+networks:
+  backend_nw:
+    driver: bridge

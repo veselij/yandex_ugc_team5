@@ -1,12 +1,16 @@
 import aioredis
+import motor.motor_asyncio
 import uvicorn
 from fastapi.applications import FastAPI
 from fastapi.responses import ORJSONResponse
 from kafka import KafkaProducer
 
-from api.v1.films import router
+from api.v1.bookmarks import router as bookmarks
+from api.v1.films import router as player_progress
+from api.v1.likes import router as likes
+from api.v1.reviews import router as reviews
 from core import config
-from db import kafka, redis
+from db import kafka, redis, mongodb
 
 app = FastAPI(
     title=config.PROJECT_NAME,
@@ -20,12 +24,16 @@ app = FastAPI(
 
 @app.on_event("startup")
 async def startup():
-    redis.redis_client = await aioredis.from_url(
-        f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}"
-    )
-    kafka.kafka_producer = KafkaProducer(
-        bootstrap_servers=[f"{config.KAFKA_BROKER_HOST}:{config.KAFKA_BROKER_PORT}"]
-    )
+    try:
+        mongodb.mongo_client = motor.motor_asyncio.AsyncIOMotorClient(config.MONGODB_URL)
+        redis.redis_client = await aioredis.from_url(
+            f"redis://{config.REDIS_HOST}:{config.REDIS_PORT}"
+        )
+        kafka.kafka_producer = KafkaProducer(
+            bootstrap_servers=[f"{config.KAFKA_BROKER_HOST}:{config.KAFKA_BROKER_PORT}"]
+        )
+    except Exception as e:
+        print(e)
 
 
 @app.on_event("shutdown")
@@ -33,7 +41,10 @@ async def shutdown():
     pass
 
 
-app.include_router(router, prefix="/api/v1", tags=["Films"])
+app.include_router(player_progress, prefix="/api/v1", tags=["Films"])
+app.include_router(bookmarks, prefix="/api/v1", tags=["Bookmarks"])
+app.include_router(reviews, prefix="/api/v1", tags=["Reviews"])
+app.include_router(likes, prefix="/api/v1", tags=["Likes"])
 
 if __name__ == "__main__":
-    uvicorn.run(app=app, debug=True, host="127.0.0.1", port=8000)  # type: ignore
+    uvicorn.run(app=app, debug=True, host="0.0.0.0", port=8000)  # type: ignore
