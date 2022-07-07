@@ -117,9 +117,9 @@ services:
       - zookeeper
       - kafka-setup
 
-  redis:
+  redis_film_watch:
     image: redis:6.2.6
-    container_name: redis
+    container_name: redis_film_watch
     networks:
       - backend_nw
     expose:
@@ -141,7 +141,7 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - redis
+      - redis_film_watch
       - kafka-setup
 volumes:
   code_api_film_watch:

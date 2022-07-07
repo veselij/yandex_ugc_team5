@@ -3,8 +3,6 @@ services:
   zookeeper_kafka:
     image: confluentinc/cp-zookeeper:7.0.1
     container_name: zookeeper_kafka
-    networks:
-      - backend_nw
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
@@ -14,8 +12,6 @@ services:
   broker:
     image: confluentinc/cp-kafka:7.0.1
     container_name: broker
-    networks:
-      - backend_nw
     expose:
       - 9092
       - 29092
@@ -43,8 +39,6 @@ services:
     image: confluentinc/cp-kafka:7.0.1
     hostname: kafka-setup
     container_name: kafka-setup
-    networks:
-      - backend_nw
     depends_on:
       broker:
         condition: service_healthy
@@ -55,8 +49,6 @@ services:
     image: zookeeper:3.5
     container_name: zookeeper
     hostname: zookeeper
-    networks:
-      - backend_nw
     logging:
       driver: "none"
 
@@ -66,8 +58,6 @@ services:
       context: .
       dockerfile: ./click_house_config/Dockerfile.cl1
     hostname: clickhouse-node1
-    networks:
-      - backend_nw
     ports:
       - "8123:8123"
     expose:
@@ -85,8 +75,6 @@ services:
     image: yandex/clickhouse-server
     container_name: clickhouse-node2
     hostname: clickhouse-node2
-    networks:
-      - backend_nw
     expose:
       - 9009
     volumes:
@@ -103,8 +91,6 @@ services:
       dockerfile: ./click_house_config/Dockerfile.cl3
     container_name: clickhouse-node3
     hostname: clickhouse-node3
-    networks:
-      - backend_nw
     expose:
       - 9009
       - 9000
@@ -120,8 +106,6 @@ services:
     image: yandex/clickhouse-server
     container_name: clickhouse-node4
     hostname: clickhouse-node4
-    networks:
-      - backend_nw
     expose:
       - 9009
     volumes:
@@ -132,11 +116,9 @@ services:
     logging:
       driver: "none"
 
-  redis:
+  redis_film_watch:
     image: redis:6.2.6
-    container_name: redis
-    networks:
-      - backend_nw
+    container_name: redis_film_watch
     expose:
       - 6379
     logging:
@@ -148,8 +130,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile
-    networks:
-      - backend_nw
     volumes:
       - code_api_film_watch:/code
     env_file:
@@ -159,7 +139,7 @@ services:
     ports:
       - 8000:8000
     depends_on:
-      - redis
+      - redis_film_watch
       - kafka-setup
 
   film_watch_test:
@@ -167,8 +147,6 @@ services:
     build:
       context: .
       dockerfile: ./Dockerfile.test
-    networks:
-      - backend_nw
     volumes:
       - code_api_test:/code
     entrypoint: 
@@ -177,10 +155,64 @@ services:
       - film_watch
 
 
+
+
+  nginx:
+    image: nginx:1.19.2
+    volumes:
+      - ./deploy/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./deploy/logs/nginx/:/var/log/nginx/
+    depends_on:
+      - film_watch
+    ports:
+      - 8080:80
+
+  logstash:
+    image: logstash:7.17.5
+    environment:
+      ES_HOST: "elasticsearch:9200"
+    ports:
+      - "5044:5044/udp"
+    volumes:
+      - ./deploy/logstash.conf:/config/logstash.conf:ro
+      - ./deploy/logs/nginx/:/var/log/nginx/:ro
+    command: logstash -f /config/logstash.conf
+
+  elasticsearch:
+    image: elasticsearch:7.17.1
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: kibana:7.17.5
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    image: elastic/filebeat:7.3.2
+    volumes:
+      - ./deploy/logs/nginx:/var/log/nginx:ro
+      - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    depends_on:
+      - film_watch
+      - nginx
+      - logstash
+      - elasticsearch
+      - kibana
+    links:
+      - logstash
+
+
 volumes:
   code_api_film_watch:
   code_api_test:
 
 networks:
-  backend_nw:
-    driver: bridge
+  default:
+    external:
+      name: netflix_nw
