@@ -1,109 +1,68 @@
-import datetime
-from typing import Optional
-from uuid import uuid4
+from uuid import UUID
 
-import motor.motor_asyncio
-from fastapi import APIRouter, status, Depends
-from fastapi.responses import Response, ORJSONResponse
-from pydantic import BaseModel
-from pymongo.errors import DuplicateKeyError
+from fastapi import APIRouter, Depends
 
 from auth import TokenCheck
-from db.mongodb import get_mongo
+from services.mongo.reviews import get_reviews_service
+from services.reviews import Review, Reviews, ReviewCreate, BaseReviewsService, ReviewGetPublic, ReviewGetAuth, \
+    ReviewDelete
+from utils.service_result import handle_result
 
 router = APIRouter()
 
 
-class Review(BaseModel):
-    text: str
-
-
-@router.post(
-    '/review/{movie_id}',
-    status_code=status.HTTP_201_CREATED, response_class=ORJSONResponse
-)
-async def create_review(
-        movie_id: str,
-        review: Review,
-        user_id: str = Depends(TokenCheck()),
-        mongo: motor.motor_asyncio = Depends(get_mongo)
+@router.post("/reviews", response_model=Review)
+async def create(
+        item: ReviewCreate,
+        user_id: UUID = Depends(TokenCheck()),
+        service: BaseReviewsService = Depends(get_reviews_service)
 ):
-    try:
-        review_id = str(uuid4())
-        result = await mongo.films.reviews.insert_one({
-            "review_id": review_id,
-            "user_id": user_id,
-            "movie_id": movie_id,
-            "text": review.text,
-            "created_at": datetime.datetime.now()
-        })
-    except DuplicateKeyError:
-        return Response(status_code=status.HTTP_409_CONFLICT)
-
-    return ORJSONResponse(content={"review_id": review_id}, status_code=status.HTTP_201_CREATED)
-
-
-@router.get(
-    '/review/{movie_id}/user',
-    status_code=status.HTTP_201_CREATED,
-    response_class=ORJSONResponse
-)
-async def fetch_by_user_and_movie(
-        movie_id: str,
-        user_id: str = Depends(TokenCheck()),
-        mongo: motor.motor_asyncio = Depends(get_mongo)
-):
-    result = await mongo.films.reviews.find_one({
-        "user_id": user_id,
-        "movie_id": movie_id,
-    }, {"_id": 0})
-
-    return ORJSONResponse(content=result, status_code=status.HTTP_201_CREATED)
-
-
-@router.get(
-    '/review',
-    status_code=status.HTTP_201_CREATED,
-    response_class=ORJSONResponse
-)
-async def fetch_by_user(
-        user_id: str = Depends(TokenCheck()),
-        mongo: motor.motor_asyncio = Depends(get_mongo)
-):
-    result = await mongo.films.reviews.find({
-        "user_id": user_id,
-    }, {"_id": 0}).sort("created_at", -1).to_list(length=None)
-
-    return ORJSONResponse(content=result, status_code=status.HTTP_201_CREATED)
-
-
-@router.get(
-    '/review/{movie_id}',
-    status_code=status.HTTP_201_CREATED,
-    response_class=ORJSONResponse
-)
-async def fetch_by_movie(
-        movie_id: str,
-        mongo: motor.motor_asyncio = Depends(get_mongo)
-):
-    result = await mongo.films.reviews.find({
-        "movie_id": movie_id,
-    }, {"_id": 0}).sort("created_at", -1).to_list(length=None)
-
-    return ORJSONResponse(content=result, status_code=status.HTTP_201_CREATED)
-
-
-@router.delete(
-    '/review/{movie_id}',
-    status_code=status.HTTP_201_CREATED
-)
-async def delete_review(
-        movie_id: str,
-        user_id: str = Depends(TokenCheck()),
-        mongo: motor.motor_asyncio = Depends(get_mongo)
-):
-    await mongo.films.reviews.delete_one(
-        {"user_id": user_id, "movie_id": movie_id}
+    review = Review(
+        user_id=user_id,
+        movie_id=item.movie_id,
+        text=item.text
     )
+    result = await service.create(review)
+    return handle_result(result)
 
-    return Response(status_code=status.HTTP_200_OK)
+
+@router.delete("/reviews/{review_id}")
+async def delete(
+        review_id: UUID,
+        user_id: UUID = Depends(TokenCheck()),
+        service: BaseReviewsService = Depends(get_reviews_service)
+):
+    result = await service.delete(ReviewDelete(
+        review_id=review_id,
+        user_id=user_id
+    ))
+    return handle_result(result)
+
+
+@router.get("/reviews/{review_id}", response_model=Review)
+async def get(review_id: UUID, service: BaseReviewsService = Depends(get_reviews_service)):
+    result = await service.get_one(ReviewGetPublic(
+        review_id=review_id
+    ))
+    return handle_result(result)
+
+
+@router.get("/reviews/movies/{movie_id}", response_model=Reviews)
+async def get_list(
+        movie_id: UUID,
+        service: BaseReviewsService = Depends(get_reviews_service)
+):
+    result = await service.get_list(ReviewGetPublic(
+        movie_id=movie_id
+    ))
+    return handle_result(result)
+
+
+@router.get('/user/reviews', response_model=Reviews)
+async def get_list_with_auth(
+        user_id: UUID = Depends(TokenCheck()),
+        service: BaseReviewsService = Depends(get_reviews_service)
+):
+    return handle_result(await service.get_list(item=ReviewGetAuth(
+        user_id=user_id,
+    )))

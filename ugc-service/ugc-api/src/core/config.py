@@ -20,7 +20,7 @@ KAFKA_BROKER_HOST = os.getenv("KAFKA_BROKER_HOST", "127.0.0.1")
 KAFKA_BROKER_PORT = int(os.getenv("KAFKA_BROKER_PORT", 29092))
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "movies")
 
-MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://mongos1:27017,mongos2:27017")
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://mongos1:27017,mongos2:27017/ugc")
 
 NO_AUTH = os.getenv("NO_AUTH", "True") == "True"
 TEST_UUID = "1ef50a24-dff0-4b69-9351-2936f098825d"
