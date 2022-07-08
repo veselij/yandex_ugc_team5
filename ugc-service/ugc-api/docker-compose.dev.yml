@@ -162,6 +162,15 @@ services:
       - redis
       - kafka-setup
 
+  mongo:
+    container_name: mongo
+    image: mongo
+    ports:
+      - "27017:27017"
+    expose:
+      - "27017"
+
+
   film_watch_test:
     container_name: film_watch_test
     build:

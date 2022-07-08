@@ -1,0 +1,59 @@
+### create
+POST http://127.0.0.1:8000/api/v1/reviews/
+Content-Type: application/json
+Authorization: Bearer test
+
+{
+  "text": "test",
+  "movie_id": "948e98ab-1371-4fed-80db-a0709afb15b7"
+}
+
+> {%
+client.global.set("review_id", response.body.review_id);
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+
+### by review
+GET http://127.0.0.1:8000/api/v1/reviews/{{review_id}}
+Content-Type: application/json
+Authorization: Bearer test
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+
+### by user
+GET http://127.0.0.1:8000/api/v1/user/reviews
+Content-Type: application/json
+Authorization: Bearer test
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+### by movie
+GET http://127.0.0.1:8000/api/v1/reviews/movies/948e98ab-1371-4fed-80db-a0709afb15b7
+Content-Type: application/json
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+
+### delete
+DELETE http://127.0.0.1:8000/api/v1/reviews/{{review_id}}
+Content-Type: application/json
+Authorization: Bearer test
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+
