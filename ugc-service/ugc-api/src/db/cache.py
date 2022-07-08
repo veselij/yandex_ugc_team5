@@ -1,8 +1,8 @@
 from typing import Optional, Protocol, Type
 
-from core.config import logger
 from core.decorators import backoff_async
 from core.exceptions import RetryExceptionError
+from core.logger import logger
 
 
 class AbstractCache(Protocol):
