@@ -24,8 +24,8 @@
 склонировать проект в {папку}
 cd {папка}
 cd ugc-service/ugc-api
-docker-compose build
-docker-compose up
+cp .env.sample .env
+make deploy-app
 ```
 2. docker-compose.dev.yml - дополнительно к основным сервисам выполняется тест, который проверяет, что запросы пользователей сохраняются в Clickhouse: 
 ```
