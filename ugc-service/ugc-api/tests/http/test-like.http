@@ -1,0 +1,34 @@
+### create
+POST http://127.0.0.1:8000/api/v1/movies/likes
+Content-Type: application/json
+Authorization: Bearer test
+
+{
+  "value": 10,
+  "movie_id": "948e98ab-1371-4fed-80db-a0709afb15b7"
+}
+
+> {%
+client.global.set("like_id", response.body.like_id);
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+### get by like_id
+GET http://127.0.0.1:8000/api/v1/movies/likes/{{like_id}}
+Content-Type: application/json
+Authorization: Bearer test
+
+### get likese by movie_id
+GET http://127.0.0.1:8000/api/v1/movies/948e98ab-1371-4fed-80db-a0709afb15b7/likes
+Content-Type: application/json
+Authorization: Bearer test
+
+### delete like
+DELETE http://127.0.0.1:8000/api/v1/movies/likes/{{like_id}}
+Content-Type: application/json
+Authorization: Bearer test
+
+###
+
+
