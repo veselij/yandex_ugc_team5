@@ -275,6 +275,19 @@ services:
     networks:
       - backend_nw
 
+  init-collections:
+    image: mongo
+    restart: "no"
+    volumes:
+      - ./deploy/mongodb/:/deploy
+    depends_on:
+      init-mongos:
+        condition: service_completed_successfully
+    command: >
+      sh -c "mongosh --host mongos1:27017 < ./deploy/ugc/init.js"
+    networks:
+      - backend_nw
+
 
 volumes:
   rs1n1:
