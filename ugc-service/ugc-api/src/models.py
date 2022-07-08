@@ -15,7 +15,7 @@ class Base(BaseModel):
         json_dumps = orjson_dumps
 
 
-class FilmWatchTimestamp(BaseModel):
+class FilmWatchTimestamp(Base):
     user_id: Optional[str]
     film_id: UUID
     film_timestamp: int
