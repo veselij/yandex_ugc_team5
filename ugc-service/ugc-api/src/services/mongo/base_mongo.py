@@ -1,4 +1,4 @@
-from typing import Type, TypeVar
+from typing import Type
 
 import motor.motor_asyncio
 from fastapi.encoders import jsonable_encoder

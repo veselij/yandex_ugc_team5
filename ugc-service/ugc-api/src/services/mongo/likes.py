@@ -1,13 +1,7 @@
 from fastapi import Depends
 
 from db.mongodb import get_mongo
-from services.likes import (
-    BaseLikesService,
-    Like,
-    LikeDelete,
-    LikeGet,
-    Likes,
-)
+from services.likes import BaseLikesService, Like, LikeDelete, LikeGet, Likes
 from services.mongo.base_mongo import BaseMongoCRUDService
 from utils.service_result import ServiceResult
 
