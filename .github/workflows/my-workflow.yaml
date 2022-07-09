@@ -1,6 +1,11 @@
 name: CI
 
-on: [ push ]
+on:
+  push:
+    branches: [ master, ci-cd ]
+  pull_request:
+    branches: [ master ]
+
 
 jobs:
   lint:
@@ -20,7 +25,7 @@ jobs:
           pip install -r ./ugc-service/ugc-api/requirements.txt
       - name: flake8
         run: |
-          flake8 ./ugs-service/ugc-api/src
+          flake8 ./ugc-service/ugc-api/src
 
       - name: mypy
         run: | 

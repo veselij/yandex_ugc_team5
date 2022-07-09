@@ -1,7 +1,7 @@
-from typing import Generator
-import uuid
-import random
 import csv
+import random
+import uuid
+from typing import Generator
 
 
 def generate_fake_data() -> Generator[list, None, None]:

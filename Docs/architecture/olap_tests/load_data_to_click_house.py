@@ -1,7 +1,7 @@
+import uuid
 from io import TextIOWrapper
 from time import perf_counter
 from typing import Generator
-import uuid
 
 from clickhouse_driver import Client
 

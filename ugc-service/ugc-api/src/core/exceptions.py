@@ -5,6 +5,7 @@ class RetryExceptionError(Exception):
         self.messsage = messsage
         super().__init__(self.messsage)
 
+
 class AuthExceptionError(Exception):
     """Exception triggers function retry."""
 
