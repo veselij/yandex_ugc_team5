@@ -17,7 +17,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install -r .ugc-service/ugc-api/requirements.txt
+          pip install -r ./ugc-service/ugc-api/requirements.txt
       - name: flake8
         run: |
           flake8 ./ugs-service/ugc-api/src
