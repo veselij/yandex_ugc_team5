@@ -12,4 +12,4 @@ env
 .vscode
 **/*.csv
 **/typings
-.idea
+/.idea/

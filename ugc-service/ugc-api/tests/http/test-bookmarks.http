@@ -1,0 +1,33 @@
+### create
+POST http://127.0.0.1:8000/api/v1/bookmarks
+Content-Type: application/json
+Authorization: Bearer test
+
+{
+  "movie_id": "948e98ab-1371-4fed-80db-a0709afb15b7"
+}
+
+
+> {%
+client.global.set("bookmark_id", response.body.bookmark_id);
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+### get by bookmark_id
+GET http://127.0.0.1:8000/api/v1/bookmarks/{{bookmark_id}}
+Content-Type: application/json
+Authorization: Bearer test
+
+### get by user_id
+GET http://127.0.0.1:8000/api/v1/bookmarks
+Content-Type: application/json
+Authorization: Bearer test
+
+### delete
+DELETE http://127.0.0.1:8000/api/v1/bookmarks/{{bookmark_id}}
+Content-Type: application/json
+Authorization: Bearer test
+
+
+

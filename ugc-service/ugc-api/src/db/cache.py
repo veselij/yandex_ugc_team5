@@ -6,9 +6,9 @@ if platform.python_version_tuple()[:2] == (3, 7):
 else:
     from typing import Protocol
 
-from core.config import logger
 from core.decorators import backoff_async
 from core.exceptions import RetryExceptionError
+from core.logger import logger
 
 
 class AbstractCache(Protocol):

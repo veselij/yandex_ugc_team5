@@ -9,11 +9,17 @@ def orjson_dumps(v, *, default) -> str:
     return orjson.dumps(v, default=default).decode()
 
 
-class FilmWatchTimestamp(BaseModel):
+class Base(BaseModel):
     class Config:
         json_loads = orjson.loads
         json_dumps = orjson_dumps
 
+
+class FilmWatchTimestamp(Base):
     user_id: Optional[str]
     film_id: UUID
     film_timestamp: int
+
+
+class Like(BaseModel):
+    rating: int

@@ -1,10 +1,4 @@
-import logging
 import os
-from logging import config as logging_config
-
-from core.logger import LOGGING
-
-logging_config.dictConfig(LOGGING)
 
 PROJECT_NAME = os.getenv("PROJECT_NAME", "API film watch timestamp")
 
@@ -20,11 +14,15 @@ KAFKA_BROKER_HOST = os.getenv("KAFKA_BROKER_HOST", "127.0.0.1")
 KAFKA_BROKER_PORT = int(os.getenv("KAFKA_BROKER_PORT", 29092))
 KAFKA_TOPIC = os.getenv("KAFKA_TOPIC", "movies")
 
+MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://mongos1:27017,mongos2:27017/ugc")
+
 NO_AUTH = os.getenv("NO_AUTH", "True") == "True"
 TEST_UUID = "1ef50a24-dff0-4b69-9351-2936f098825d"
 
-logger = logging.getLogger(__name__)
-formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
-fh = logging.FileHandler(filename=LOG_FILENAME)
-fh.setFormatter(formatter)
-logger.addHandler(fh)
+SENTRY_DSN = os.getenv(
+    "SENTRY_DSN",
+    "https://7e6a809a189147aab1b45d6065372088@o1305980.ingest.sentry.io/6548342",
+)
+
+LOGSTASH_HOST = os.getenv("LOGSTASH_HOST", "logstash")
+LOGSTASH_PORT = os.getenv("LOGSTASH_PORT", 5044)
