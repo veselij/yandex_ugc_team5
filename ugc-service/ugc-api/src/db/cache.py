@@ -4,7 +4,7 @@ from typing import Optional, Type
 if platform.python_version_tuple()[:2] == (3, 7):
     from typing_extensions import Protocol
 else:
-    from typing import Protocol
+    from typing import Protocol  # type:ignore
 
 from core.decorators import backoff_async
 from core.exceptions import RetryExceptionError

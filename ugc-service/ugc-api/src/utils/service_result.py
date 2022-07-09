@@ -1,12 +1,12 @@
 import inspect
 
-from core.config import logger
-from utils.app_exceptions import AppExceptionCase
+from core import logger
+from utils.app_exceptions import AppExceptionCaseError
 
 
 class ServiceResult(object):
     def __init__(self, arg):
-        if isinstance(arg, AppExceptionCase):
+        if isinstance(arg, AppExceptionCaseError):
             self.success = False
             self.exception_case = arg.exception_case
             self.status_code = arg.status_code

@@ -19,7 +19,7 @@ from api.v1.reviews_likes import router as reviews_likes
 from core import config
 from core.logger_config import LOGGING
 from db import kafka, mongodb, redis
-from utils.app_exceptions import AppExceptionCase, app_exception_handler
+from utils.app_exceptions import AppExceptionCaseError, app_exception_handler
 
 sentry_sdk.init(dsn=config.SENTRY_DSN, traces_sample_rate=1)
 request_id_middleware = Middleware(
@@ -38,7 +38,7 @@ app = FastAPI(
 )
 
 
-@app.exception_handler(AppExceptionCase)
+@app.exception_handler(AppExceptionCaseError)
 async def custom_app_exception_handler(request, e):
     return await app_exception_handler(request, e)
 
@@ -66,4 +66,4 @@ app.include_router(likes, prefix="/api/v1", tags=["Likes"])
 app.include_router(reviews_likes, prefix="/api/v1", tags=["Revies", "Likes"])
 
 if __name__ == "__main__":
-    uvicorn.run(app=app, debug=True, host="0.0.0.0", port=8000)  # type: ignore
+    uvicorn.run(app=app, debug=True, host="localhost", port=8000)  # type: ignore
