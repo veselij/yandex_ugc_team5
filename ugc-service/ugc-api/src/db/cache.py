@@ -1,4 +1,10 @@
-from typing import Optional, Protocol, Type
+import platform
+from typing import Optional, Type
+
+if platform.python_version_tuple()[:2] == (3, 7):
+    from typing_extensions import Protocol
+else:
+    from typing import Protocol
 
 from core.config import logger
 from core.decorators import backoff_async
@@ -14,7 +20,6 @@ class AbstractCache(Protocol):
 
 
 class Cache:
-
     cache_timer = 60 * 5
 
     def __init__(self, cache: AbstractCache, exc: Type[Exception]) -> None:
