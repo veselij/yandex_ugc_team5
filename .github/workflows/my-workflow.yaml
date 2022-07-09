@@ -25,8 +25,8 @@ jobs:
           pip install -r ./ugc-service/ugc-api/requirements.txt
       - name: flake8
         run: |
-          flake8 ./ugc-service/ugc-api/src
+          flake8 ./ugc-service/ugc-api
 
       - name: mypy
         run: | 
-          mypy ugc-service/ugc-api/src
+          mypy ./ugc-service/ugc-api
