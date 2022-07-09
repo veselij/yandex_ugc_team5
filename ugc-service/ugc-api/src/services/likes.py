@@ -3,12 +3,13 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from models import Base
 from utils.service_result import ServiceResult
 
 
-class Like(BaseModel):
+class Like(Base):
     like_id: UUID = Field(default_factory=uuid4)
     movie_id: UUID
     user_id: UUID
@@ -16,24 +17,24 @@ class Like(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
 
 
-class LikeGet(BaseModel):
+class LikeGet(Base):
     like_id: Optional[UUID]
     movie_id: Optional[UUID]
     rating_id: Optional[UUID]
     user_id: Optional[UUID]
 
 
-class LikeCreate(BaseModel):
+class LikeCreate(Base):
     movie_id: UUID
     value: int
 
 
-class LikeDelete(BaseModel):
+class LikeDelete(Base):
     like_id: UUID
     user_id: UUID
 
 
-class Likes(BaseModel):
+class Likes(Base):
     items: List[Like]
     count: int
 

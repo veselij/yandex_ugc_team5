@@ -6,7 +6,7 @@ from services.reviews import (
     BaseReviewsService,
     Review,
     ReviewDelete,
-    ReviewGetPublic,
+    ReviewGet,
     Reviews,
 )
 from utils.service_result import ServiceResult
@@ -19,10 +19,10 @@ class MongoReviewsService(BaseReviewsService, BaseMongoCRUDService):
     async def delete(self, item: ReviewDelete) -> ServiceResult:
         return await self._delete(item)
 
-    async def get_one(self, item: ReviewGetPublic) -> ServiceResult:
+    async def get_one(self, item: ReviewGet) -> ServiceResult:
         return await self._get_one(item, Review)
 
-    async def get_list(self, item: ReviewGetPublic) -> ServiceResult:
+    async def get_list(self, item: ReviewGet) -> ServiceResult:
         return await self._get_list(item, Reviews)
 
 

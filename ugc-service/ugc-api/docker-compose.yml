@@ -70,7 +70,7 @@ services:
     volumes:
       - ./click_house_config/node1:/etc/clickhouse-server
     depends_on:
-      - zookeeper 
+      - zookeeper
       - kafka-setup
 
   clickhouse-node2:
@@ -136,7 +136,7 @@ services:
       - code_api_film_watch:/code
     env_file:
       - .env
-    entrypoint: 
+    entrypoint:
       - entrypoint_fastapi.sh
     ports:
       - 8000:8000

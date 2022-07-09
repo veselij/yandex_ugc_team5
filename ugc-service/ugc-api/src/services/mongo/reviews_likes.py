@@ -5,7 +5,6 @@ from services.mongo.base_mongo import BaseMongoCRUDService
 from services.reviews_likes import (
     BaseReviewLikesService,
     ReviewLike,
-    ReviewLikeCreate,
     ReviewLikeDelete,
     ReviewLikeGet,
     ReviewLikes,
@@ -14,7 +13,7 @@ from utils.service_result import ServiceResult
 
 
 class MongoReviewLikesService(BaseReviewLikesService, BaseMongoCRUDService):
-    async def create(self, item: ReviewLikeCreate) -> ServiceResult:
+    async def create(self, item: ReviewLike) -> ServiceResult:
         return await self._create(item)
 
     async def delete(self, item: ReviewLikeDelete) -> ServiceResult:

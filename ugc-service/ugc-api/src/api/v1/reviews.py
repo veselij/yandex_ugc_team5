@@ -9,8 +9,7 @@ from services.reviews import (
     Review,
     ReviewCreate,
     ReviewDelete,
-    ReviewGetAuth,
-    ReviewGetPublic,
+    ReviewGet,
     Reviews,
 )
 from utils.service_result import handle_result
@@ -48,7 +47,7 @@ async def delete(
 
 @router.get("/reviews/{review_id}", response_model=Review)
 async def get(review_id: UUID, service: BaseReviewsService = Depends(get_reviews_service)):
-    result = await service.get_one(ReviewGetPublic(
+    result = await service.get_one(ReviewGet(
         review_id=review_id
     ))
     return handle_result(result)
@@ -59,7 +58,7 @@ async def get_list(
         movie_id: UUID,
         service: BaseReviewsService = Depends(get_reviews_service)
 ):
-    result = await service.get_list(ReviewGetPublic(
+    result = await service.get_list(ReviewGet(
         movie_id=movie_id
     ))
     return handle_result(result)
@@ -70,6 +69,6 @@ async def get_list_with_auth(
         user_id: UUID = Depends(TokenCheck()),
         service: BaseReviewsService = Depends(get_reviews_service)
 ):
-    return handle_result(await service.get_list(item=ReviewGetAuth(
+    return handle_result(await service.get_list(item=ReviewGet(
         user_id=user_id,
     )))

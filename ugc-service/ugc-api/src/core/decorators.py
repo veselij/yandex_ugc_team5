@@ -25,7 +25,7 @@ def expo(start_sleep_time, factor, border_sleep_time):
     sequence_element = 1
     while True:
         yield start
-        start = start_sleep_time * factor**sequence_element
+        start = start_sleep_time * factor ** sequence_element
         if start > border_sleep_time:
             start = border_sleep_time
         sequence_element += 1

@@ -3,7 +3,7 @@ from starlette.responses import JSONResponse
 
 
 class AppExceptionCaseError(Exception):
-    def __init__(self, status_code: int, context: dict):
+    def __init__(self, status_code: int, context: dict = None):
         self.exception_case = self.__class__.__name__
         self.status_code = status_code
         self.context = context

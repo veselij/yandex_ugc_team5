@@ -3,12 +3,13 @@ from datetime import datetime
 from typing import List, Optional
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from models import Base
 from utils.service_result import ServiceResult
 
 
-class Review(BaseModel):
+class Review(Base):
     review_id: UUID = Field(default_factory=uuid4)
     movie_id: UUID
     user_id: UUID
@@ -16,28 +17,23 @@ class Review(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
 
 
-class ReviewCreate(BaseModel):
+class ReviewCreate(Base):
     movie_id: UUID
     text: str
 
 
-class ReviewDelete(BaseModel):
+class ReviewDelete(Base):
     review_id: UUID
     user_id: UUID
 
 
-class ReviewGetPublic(BaseModel):
-    review_id: Optional[UUID]
-    movie_id: Optional[UUID]
-
-
-class ReviewGetAuth(BaseModel):
+class ReviewGet(Base):
     review_id: Optional[UUID]
     movie_id: Optional[UUID]
     user_id: UUID
 
 
-class Reviews(BaseModel):
+class Reviews(Base):
     items: List[Review]
 
 
@@ -51,9 +47,9 @@ class BaseReviewsService(ABC):
         pass
 
     @abstractmethod
-    async def get_one(self, item: ReviewGetPublic) -> ServiceResult:
+    async def get_one(self, item: ReviewGet) -> ServiceResult:
         pass
 
     @abstractmethod
-    async def get_list(self, item: ReviewGetPublic) -> ServiceResult:
+    async def get_list(self, item: ReviewGet) -> ServiceResult:
         pass

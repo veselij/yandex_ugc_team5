@@ -53,7 +53,7 @@ async def get_list(
 
 
 @router.get('/user/reviews/likes', response_model=ReviewLikes)
-async def get_list(
+async def get_list_by_user(
         user_id: UUID = Depends(TokenCheck()),
         service: BaseReviewLikesService = Depends(get_review_likes_service)
 ):
