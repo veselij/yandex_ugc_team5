@@ -26,7 +26,8 @@ class TokenCheck(HTTPBearer):
             raise HTTPException(httpx.codes.UNAUTHORIZED)
         if config.NO_AUTH:
             return CustomHTTPAuthorizationCredentials(
-                user_id=config.TEST_UUID, **credentials.dict()
+                user_id=config.TEST_UUID,
+                **credentials.dict(),
             )
         cache_provider = await get_redis()
         cache = Cache(*cache_provider)  # type: ignore
@@ -34,7 +35,8 @@ class TokenCheck(HTTPBearer):
         user_id = await cache.get_obj_from_cache(str(token))
         if user_id:
             return CustomHTTPAuthorizationCredentials(
-                user_id=str(user_id), **credentials.dict()
+                user_id=str(user_id),
+                **credentials.dict(),
             )
         user_id = jwt.decode(token, options={"verify_signature": False})["sub"]
         request_id = request.headers.get("X-Request-Id") or "none"
@@ -45,7 +47,8 @@ class TokenCheck(HTTPBearer):
             raise exception
         await cache.put_obj_to_cache(token, user_id)
         return CustomHTTPAuthorizationCredentials(
-            user_id=str(user_id), **credentials.dict()
+            user_id=str(user_id),
+            **credentials.dict(),
         )
 
     @backoff_async(
