@@ -143,6 +143,68 @@ services:
     depends_on:
       - redis_film_watch
       - kafka-setup
+
+  nginx:
+    image: nginx:1.19.2
+    networks:
+      - backend_nw
+    volumes:
+      - ./deploy/etc/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./deploy/etc/nginx/conf.d:/etc/nginx/conf.d:ro
+      - ./deploy/logs/nginx/:/var/log/nginx/
+    depends_on:
+      - film_watch
+    ports:
+      - 8080:80
+
+  logstash:
+    image: logstash:7.17.5
+    networks:
+      - backend_nw
+    environment:
+      ES_HOST: "elasticsearch:9200"
+    ports:
+      - "5044:5044/udp"
+    volumes:
+      - ./deploy/logstash.conf:/config/logstash.conf:ro
+      - ./deploy/logs/nginx/:/var/log/nginx/:ro
+    command: logstash -f /config/logstash.conf
+
+  elasticsearch:
+    image: elasticsearch:7.17.1
+    networks:
+      - backend_nw
+    environment:
+      discovery.type: single-node
+    ports:
+      - 9200:9200
+
+  kibana:
+    image: kibana:7.17.5
+    networks:
+      - backend_nw
+    ports:
+      - "5601:5601"
+    depends_on:
+      - elasticsearch
+
+  filebeat:
+    image: elastic/filebeat:7.3.2
+    networks:
+      - backend_nw
+    volumes:
+      - ./deploy/logs/nginx:/var/log/nginx:ro
+      - ./deploy/filebeat.yml:/usr/share/filebeat/filebeat.yml
+    depends_on:
+      - film_watch
+      - nginx
+      - logstash
+      - elasticsearch
+      - kibana
+    links:
+      - logstash
+
+
 volumes:
   code_api_film_watch:
 
