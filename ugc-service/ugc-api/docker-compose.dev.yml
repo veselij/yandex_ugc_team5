@@ -66,7 +66,7 @@ services:
     volumes:
       - ./click_house_config/node1:/etc/clickhouse-server
     depends_on:
-      - zookeeper 
+      - zookeeper
       - kafka-setup
     logging:
       driver: "none"
@@ -134,7 +134,7 @@ services:
       - code_api_film_watch:/code
     env_file:
       - .env
-    entrypoint: 
+    entrypoint:
       - entrypoint_fastapi.sh
     ports:
       - 8000:8000
@@ -158,7 +158,7 @@ services:
       dockerfile: ./Dockerfile.test
     volumes:
       - code_api_test:/code
-    entrypoint: 
+    entrypoint:
       - entrypoint_tests.sh
     depends_on:
       - film_watch

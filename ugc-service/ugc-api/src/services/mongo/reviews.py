@@ -2,7 +2,13 @@ from fastapi import Depends
 
 from db.mongodb import get_mongo
 from services.mongo.base_mongo import BaseMongoCRUDService
-from services.reviews import BaseReviewsService, Review, Reviews, ReviewDelete, ReviewGetPublic
+from services.reviews import (
+    BaseReviewsService,
+    Review,
+    ReviewDelete,
+    ReviewGet,
+    Reviews,
+)
 from utils.service_result import ServiceResult
 
 
@@ -13,10 +19,10 @@ class MongoReviewsService(BaseReviewsService, BaseMongoCRUDService):
     async def delete(self, item: ReviewDelete) -> ServiceResult:
         return await self._delete(item)
 
-    async def get_one(self, item: ReviewGetPublic) -> ServiceResult:
+    async def get_one(self, item: ReviewGet) -> ServiceResult:
         return await self._get_one(item, Review)
 
-    async def get_list(self, item: ReviewGetPublic) -> ServiceResult:
+    async def get_list(self, item: ReviewGet) -> ServiceResult:
         return await self._get_list(item, Reviews)
 
 

@@ -1,7 +1,13 @@
 from fastapi import Depends
 
 from db.mongodb import get_mongo
-from services.bookmarks import BaseBookmarkService, Bookmark, Bookmarks, BookmarkDelete, BookmarkGet
+from services.bookmarks import (
+    BaseBookmarkService,
+    Bookmark,
+    BookmarkDelete,
+    BookmarkGet,
+    Bookmarks,
+)
 from services.mongo.base_mongo import BaseMongoCRUDService
 from utils.service_result import ServiceResult
 

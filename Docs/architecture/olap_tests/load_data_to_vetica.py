@@ -1,11 +1,10 @@
+import uuid
 from io import TextIOWrapper
 from time import perf_counter
 from typing import Generator
-import uuid
 
 import vertica_python
 from vertica_python.vertica.cursor import Cursor
-
 
 connection_info = {
     'host': '127.0.0.1',

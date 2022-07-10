@@ -33,6 +33,7 @@ flake8-polyfill==1.0.2
 flake8-quotes==3.3.1
 flake8-rst-docstrings==0.2.6
 flake8-string-format==0.3.0
+flake8-html==0.4.2
 gitdb==4.0.9
 GitPython==3.1.27
 gunicorn==20.1.0
@@ -46,6 +47,7 @@ isort==5.10.1
 kafka-python==2.0.2
 lazy-object-proxy==1.7.1
 mccabe==0.6.1
+mypy==0.961
 mongodb-migrations==1.2.1
 motor==3.0.0
 mypy-extensions==0.4.3

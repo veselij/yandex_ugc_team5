@@ -1,14 +1,15 @@
 from abc import ABC, abstractmethod
 from datetime import datetime
-from typing import Optional, List
+from typing import List, Optional
 from uuid import UUID, uuid4
 
-from pydantic import BaseModel, Field
+from pydantic import Field
 
+from models import Base
 from utils.service_result import ServiceResult
 
 
-class ReviewLike(BaseModel):
+class ReviewLike(Base):
     like_id: UUID = Field(default_factory=uuid4)
     review_id: UUID
     user_id: UUID
@@ -16,23 +17,23 @@ class ReviewLike(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
 
 
-class ReviewLikeGet(BaseModel):
+class ReviewLikeGet(Base):
     like_id: Optional[UUID]
     review_id: Optional[UUID]
     user_id: Optional[UUID]
 
 
-class ReviewLikeCreate(BaseModel):
+class ReviewLikeCreate(Base):
     review_id: UUID
     value: int
 
 
-class ReviewLikeDelete(BaseModel):
+class ReviewLikeDelete(Base):
     like_id: UUID
     user_id: UUID
 
 
-class ReviewLikes(BaseModel):
+class ReviewLikes(Base):
     items: List[ReviewLike]
     count: int
 

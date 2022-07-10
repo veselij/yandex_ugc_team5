@@ -23,4 +23,3 @@ class FilmWatchTimestamp(Base):
 
 class Like(BaseModel):
     rating: int
-
