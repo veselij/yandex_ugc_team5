@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from auth import TokenCheck
+from auth import TokenCheck, CustomHTTPAuthorizationCredentials
 from services.mongo.reviews_likes import get_review_likes_service
 from services.reviews_likes import (
     BaseReviewLikesService,
@@ -20,12 +20,12 @@ router = APIRouter()
 @router.post('/reviews/likes', response_model=ReviewLike)
 async def create(
         like: ReviewLikeCreate,
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseReviewLikesService = Depends(get_review_likes_service)
 ):
     return handle_result(await service.create(item=ReviewLike(
         review_id=like.review_id,
-        user_id=user_id,
+        user_id=user_credentials.user_id,
         value=like.value
     )))
 
@@ -33,12 +33,12 @@ async def create(
 @router.delete('/reviews/likes/{like_id}')
 async def delete(
         like_id: UUID,
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseReviewLikesService = Depends(get_review_likes_service)
 ):
     return handle_result(await service.delete(item=ReviewLikeDelete(
         like_id=like_id,
-        user_id=user_id,
+        user_id=user_credentials.user_id,
     )))
 
 
@@ -54,9 +54,9 @@ async def get_list(
 
 @router.get('/user/reviews/likes', response_model=ReviewLikes)
 async def get_list_by_user(
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseReviewLikesService = Depends(get_review_likes_service)
 ):
     return handle_result(await service.get_list(item=ReviewLikeGet(
-        user_id=user_id
+        user_id=user_credentials.user_id
     )))

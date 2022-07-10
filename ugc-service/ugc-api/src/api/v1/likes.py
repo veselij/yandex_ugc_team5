@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from auth import TokenCheck
+from auth import TokenCheck, CustomHTTPAuthorizationCredentials
 from services.likes import (
     BaseLikesService,
     Like,
@@ -21,12 +21,12 @@ router = APIRouter()
 @router.post('/movies/likes', response_model=Like)
 async def create(
         like: LikeCreate,
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseLikesService = Depends(get_likes_service)
 ):
     return handle_result(await service.create(item=Like(
         movie_id=like.movie_id,
-        user_id=user_id,
+        user_id=user_credentials.user_id,
         value=like.value
     )))
 
@@ -34,12 +34,12 @@ async def create(
 @router.delete('/movies/likes/{like_id}')
 async def delete(
         like_id: UUID,
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseLikesService = Depends(get_likes_service)
 ):
     return handle_result(await service.delete(item=LikeDelete(
         like_id=like_id,
-        user_id=user_id,
+        user_id=user_credentials.user_id,
     )))
 
 
@@ -66,10 +66,10 @@ async def get_list(
 @router.get('/user/movies/likes', response_model=Likes)
 async def get_list_with_auth(
         movie_id: Optional[UUID],
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseLikesService = Depends(get_likes_service)
 ):
     return handle_result(await service.get_list(item=LikeGet(
-        user_id=user_id,
+        user_id=user_credentials.user_id,
         movie_id=movie_id,
     )))

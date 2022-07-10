@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from auth import TokenCheck
+from auth import TokenCheck, CustomHTTPAuthorizationCredentials
 from services.mongo.reviews import get_reviews_service
 from services.reviews import (
     BaseReviewsService,
@@ -20,11 +20,11 @@ router = APIRouter()
 @router.post("/reviews", response_model=Review)
 async def create(
         item: ReviewCreate,
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseReviewsService = Depends(get_reviews_service)
 ):
     review = Review(
-        user_id=user_id,
+        user_id=user_credentials.user_id,
         movie_id=item.movie_id,
         text=item.text
     )
@@ -35,12 +35,12 @@ async def create(
 @router.delete("/reviews/{review_id}")
 async def delete(
         review_id: UUID,
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseReviewsService = Depends(get_reviews_service)
 ):
     result = await service.delete(ReviewDelete(
         review_id=review_id,
-        user_id=user_id
+        user_id=user_credentials.user_id
     ))
     return handle_result(result)
 
@@ -66,9 +66,9 @@ async def get_list(
 
 @router.get('/user/reviews', response_model=Reviews)
 async def get_list_with_auth(
-        user_id: UUID = Depends(TokenCheck()),
+        user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
         service: BaseReviewsService = Depends(get_reviews_service)
 ):
     return handle_result(await service.get_list(item=ReviewGet(
-        user_id=user_id,
+        user_id=user_credentials.user_id,
     )))
