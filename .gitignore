@@ -13,3 +13,4 @@ env
 **/*.csv
 **/typings
 /.idea/
+**/.mypy_cache
