@@ -3,7 +3,7 @@ from json import JSONDecodeError
 import httpx
 import jwt
 from fastapi import HTTPException
-from fastapi.security.http import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
 from httpx import Headers
 from starlette.requests import Request
 
@@ -25,13 +25,17 @@ class TokenCheck(HTTPBearer):
         if not credentials:
             raise HTTPException(httpx.codes.UNAUTHORIZED)
         if config.NO_AUTH:
-            return CustomHTTPAuthorizationCredentials(user_id=config.TEST_UUID, **credentials.dict())
+            return CustomHTTPAuthorizationCredentials(
+                user_id=config.TEST_UUID, **credentials.dict()
+            )
         cache_provider = await get_redis()
         cache = Cache(*cache_provider)  # type: ignore
         token = credentials.credentials
         user_id = await cache.get_obj_from_cache(str(token))
         if user_id:
-            return CustomHTTPAuthorizationCredentials(user_id=str(user_id), **credentials.dict())
+            return CustomHTTPAuthorizationCredentials(
+                user_id=str(user_id), **credentials.dict()
+            )
         user_id = jwt.decode(token, options={"verify_signature": False})["sub"]
         request_id = request.headers.get("X-Request-Id") or "none"
         user_roles_resonse = await self.send_request_to_auth(token, request_id)
@@ -40,8 +44,9 @@ class TokenCheck(HTTPBearer):
             logger.exception(exception)
             raise exception
         await cache.put_obj_to_cache(token, user_id)
-        return CustomHTTPAuthorizationCredentials(user_id=str(user_id), **credentials.dict())
-
+        return CustomHTTPAuthorizationCredentials(
+            user_id=str(user_id), **credentials.dict()
+        )
 
     @backoff_async(
         logger,
