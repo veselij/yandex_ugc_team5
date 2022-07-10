@@ -28,6 +28,7 @@ jobs:
           flake8 ./ugc-service/ugc-api --format=html --htmldir=flake-report
       - name: Archive html lint results
         uses: actions/upload-artifact@v3
+        if: ${{ always() }}
         with:
           name: lint-result
           path: flake-report
@@ -35,9 +36,11 @@ jobs:
       - name: mypy
         run: |
           mypy ./ugc-service/ugc-api/src
-#
-#  notify:
-#    steps:
-#      - name: Notification in telegram
-#        run: |
-#          curl -i -X GET "https://api.telegram.org/bot${{ secrets.tg_bot_token }}/sendMessage?chat_id=${{ secrets.tg_chat_id }}&text=Pipeline finished"
+
+  notify:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Notification in telegram
+        run: |
+          curl -i -X GET "https://api.telegram.org/bot${{ secrets.tg_bot_token }}/sendMessage?chat_id=${{ secrets.tg_chat_id }}&text=pipeline finished successfully \n Repository: ${{ github.repository }}"
