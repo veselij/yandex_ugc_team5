@@ -1,6 +1,6 @@
 import inspect
-import logging
 
+from core.logger import logger
 from utils.app_exceptions import AppExceptionCaseError
 
 
@@ -41,7 +41,7 @@ def caller_info() -> str:
 def handle_result(result: ServiceResult):
     if not result.success:
         with result as exception:
-            logging.error(f"{exception} | caller={caller_info()}")
+            logger.error(f"{exception} | caller={caller_info()}")
             raise exception
     with result as result:
         return result

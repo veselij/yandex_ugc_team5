@@ -3,7 +3,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from auth import TokenCheck, CustomHTTPAuthorizationCredentials
+from auth import CustomHTTPAuthorizationCredentials, TokenCheck
 from services.likes import (
     BaseLikesService,
     Like,

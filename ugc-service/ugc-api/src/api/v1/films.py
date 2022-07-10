@@ -1,7 +1,7 @@
 from fastapi.param_functions import Depends
 from fastapi.routing import APIRouter
 
-from auth import TokenCheck, CustomHTTPAuthorizationCredentials
+from auth import CustomHTTPAuthorizationCredentials, TokenCheck
 from kafka_service import send_to_kafka
 from models import FilmWatchTimestamp
 

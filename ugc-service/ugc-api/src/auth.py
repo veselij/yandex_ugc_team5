@@ -3,7 +3,7 @@ from json import JSONDecodeError
 import httpx
 import jwt
 from fastapi import HTTPException
-from fastapi.security.http import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi.security.http import HTTPAuthorizationCredentials, HTTPBearer
 from httpx import Headers
 from starlette.requests import Request
 
@@ -41,7 +41,6 @@ class TokenCheck(HTTPBearer):
             raise exception
         await cache.put_obj_to_cache(token, user_id)
         return CustomHTTPAuthorizationCredentials(user_id=str(user_id), **credentials.dict())
-
 
     @backoff_async(
         logger,

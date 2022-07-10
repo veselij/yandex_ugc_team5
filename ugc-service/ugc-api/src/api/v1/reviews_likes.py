@@ -2,7 +2,7 @@ from uuid import UUID
 
 from fastapi import APIRouter, Depends
 
-from auth import TokenCheck, CustomHTTPAuthorizationCredentials
+from auth import CustomHTTPAuthorizationCredentials, TokenCheck
 from services.mongo.reviews_likes import get_review_likes_service
 from services.reviews_likes import (
     BaseReviewLikesService,
