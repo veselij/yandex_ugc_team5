@@ -5,7 +5,7 @@ Authorization: Bearer test
 
 {
   "text": "test",
-  "movie_id": "948e98ab-1371-4fed-80db-a0709afb15b7"
+  "movie_id": "{{movie_id}}"
 }
 
 > {%
@@ -47,7 +47,7 @@ client.test("Request executed successfully", function() {
 
 
 ### delete
-DELETE http://127.0.0.1:8000/api/v1/reviews/{{review_id}}
+DELETE http://127.0.0.1:8000/api/v1/movies/{{movie_id}}/reviews/{{review_id}}
 Content-Type: application/json
 Authorization: Bearer test
 

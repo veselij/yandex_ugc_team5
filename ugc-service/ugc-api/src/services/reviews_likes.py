@@ -29,6 +29,7 @@ class ReviewLikeCreate(Base):
 
 
 class ReviewLikeDelete(Base):
+    review_id: UUID
     like_id: UUID
     user_id: UUID
 

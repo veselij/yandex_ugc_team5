@@ -34,15 +34,17 @@ async def create(
     )
 
 
-@router.delete("/reviews/likes/{like_id}")
+@router.delete("/reviews/{review_id}/likes/{like_id}")
 async def delete(
     like_id: UUID,
+    review_id: UUID,
     user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
     service: BaseReviewLikesService = Depends(get_review_likes_service),
 ):
     return handle_result(
         await service.delete(
             item=ReviewLikeDelete(
+                review_id=review_id,
                 like_id=like_id,
                 user_id=UUID(user_credentials.user_id),
             )

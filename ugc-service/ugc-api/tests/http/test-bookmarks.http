@@ -4,9 +4,8 @@ Content-Type: application/json
 Authorization: Bearer test
 
 {
-  "movie_id": "948e98ab-1371-4fed-80db-a0709afb15b7"
+  "movie_id": "{{movie_id}}"
 }
-
 
 > {%
 client.global.set("bookmark_id", response.body.bookmark_id);
@@ -19,15 +18,29 @@ GET http://127.0.0.1:8000/api/v1/bookmarks/{{bookmark_id}}
 Content-Type: application/json
 Authorization: Bearer test
 
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
 ### get by user_id
 GET http://127.0.0.1:8000/api/v1/bookmarks
 Content-Type: application/json
 Authorization: Bearer test
 
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
 ### delete
-DELETE http://127.0.0.1:8000/api/v1/bookmarks/{{bookmark_id}}
+DELETE http://127.0.0.1:8000/api/v1/movies/{{movie_id}}/bookmarks/{{bookmark_id}}
 Content-Type: application/json
 Authorization: Bearer test
 
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
 
 

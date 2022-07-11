@@ -25,12 +25,13 @@ class ReviewCreate(Base):
 class ReviewDelete(Base):
     review_id: UUID
     user_id: UUID
+    movie_id: UUID
 
 
 class ReviewGet(Base):
     review_id: Optional[UUID]
     movie_id: Optional[UUID]
-    user_id: UUID
+    user_id: Optional[UUID]
 
 
 class Reviews(Base):

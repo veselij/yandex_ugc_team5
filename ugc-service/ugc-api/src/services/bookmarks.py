@@ -28,6 +28,8 @@ class BookmarkCreate(Base):
 
 class BookmarkDelete(Base):
     bookmark_id: UUID
+    movie_id: UUID
+    user_id: UUID
 
 
 class Bookmarks(Base):

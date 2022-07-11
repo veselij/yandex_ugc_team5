@@ -1,3 +1,20 @@
+### create review
+POST http://127.0.0.1:8000/api/v1/reviews/
+Content-Type: application/json
+Authorization: Bearer test
+
+{
+  "text": "test",
+  "movie_id": "{{movie_id}}"
+}
+
+> {%
+client.global.set("review_id", response.body.review_id);
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+
 ### create
 POST http://127.0.0.1:8000/api/v1/reviews/likes
 Content-Type: application/json
@@ -16,22 +33,49 @@ client.test("Request executed successfully", function() {
 
 
 ### get likes by review_id
-GET http://127.0.0.1:8000/api/v1/reviews/948e98ab-1371-4fed-80db-a0709afb15b7/likes
+GET http://127.0.0.1:8000/api/v1/reviews/{{review_id}}/likes
 Content-Type: application/json
 Authorization: Bearer test
+
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
 
 
 ### get likes by user_id
-GET http://127.0.0.1:8000/api/v1/reviews/likes/user
+GET http://127.0.0.1:8000/api/v1/user/reviews/likes
 Content-Type: application/json
 Authorization: Bearer test
+
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
 
 
 ### delete like
-DELETE http://127.0.0.1:8000/api/v1/movies/likes/{{like_id}}
+DELETE http://127.0.0.1:8000/api/v1/reviews/{{review_id}}/likes/{{like_id}}
 Content-Type: application/json
 Authorization: Bearer test
 
-###
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
+
+
+### delete review
+DELETE http://127.0.0.1:8000/api/v1/movies/{{movie_id}}/reviews/{{review_id}}
+Content-Type: application/json
+Authorization: Bearer test
+
+> {%
+client.test("Request executed successfully", function() {
+  client.assert(response.status === 200, "Response status is not 200");
+});%}
 
 

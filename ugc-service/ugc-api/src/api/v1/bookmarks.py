@@ -32,13 +32,19 @@ async def create(
     )
 
 
-@router.delete("/bookmarks/{bookmark_id}")
+@router.delete("/movies/{movie_id}/bookmarks/{bookmark_id}")
 async def delete(
     bookmark_id: UUID,
+    movie_id: UUID,
+    user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
     service: BaseBookmarkService = Depends(get_bookmarks_service),
 ):
     return handle_result(
-        await service.delete(item=BookmarkDelete(bookmark_id=bookmark_id))
+        await service.delete(item=BookmarkDelete(
+            bookmark_id=bookmark_id,
+            user_id=user_credentials.user_id,
+            movie_id=movie_id
+        ))
     )
 
 
