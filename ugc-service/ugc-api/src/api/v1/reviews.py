@@ -30,14 +30,19 @@ async def create(
     return handle_result(result)
 
 
-@router.delete("/reviews/{review_id}")
+@router.delete("/movies/{movie_id}/reviews/{review_id}")
 async def delete(
     review_id: UUID,
+    movie_id: UUID,
     user_credentials: CustomHTTPAuthorizationCredentials = Depends(TokenCheck()),
     service: BaseReviewsService = Depends(get_reviews_service),
 ):
     result = await service.delete(
-        ReviewDelete(review_id=review_id, user_id=UUID(user_credentials.user_id))
+        ReviewDelete(
+            review_id=review_id,
+            movie_id=movie_id,
+            user_id=UUID(user_credentials.user_id),
+        )
     )
     return handle_result(result)
 

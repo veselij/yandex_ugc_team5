@@ -63,7 +63,7 @@ app.include_router(player_progress, prefix="/api/v1", tags=["Films"])
 app.include_router(bookmarks, prefix="/api/v1", tags=["Bookmarks"])
 app.include_router(reviews, prefix="/api/v1", tags=["Reviews"])
 app.include_router(likes, prefix="/api/v1", tags=["Likes"])
-app.include_router(reviews_likes, prefix="/api/v1", tags=["Revies", "Likes"])
+app.include_router(reviews_likes, prefix="/api/v1", tags=["Reviews", "Likes"])
 
 if __name__ == "__main__":
     uvicorn.run(app=app, debug=True, host="localhost", port=8000)  # type: ignore

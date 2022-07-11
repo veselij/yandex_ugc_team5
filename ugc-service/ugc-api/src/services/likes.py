@@ -31,6 +31,7 @@ class LikeCreate(Base):
 
 class LikeDelete(Base):
     like_id: UUID
+    movie_id: UUID
     user_id: UUID
 
 
