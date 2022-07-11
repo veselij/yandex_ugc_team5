@@ -23,6 +23,6 @@ SENTRY_DSN = os.getenv(
     "SENTRY_DSN",
     "https://7e6a809a189147aab1b45d6065372088@o1305980.ingest.sentry.io/6548342",
 )
-
+SENTRY_RATE = int(os.getenv("SENTRY_RATE", 0.1))
 LOGSTASH_HOST = os.getenv("LOGSTASH_HOST", "logstash")
 LOGSTASH_PORT = os.getenv("LOGSTASH_PORT", 5044)
