@@ -14,3 +14,4 @@ env
 **/typings
 /.idea/
 **/.mypy_cache
+**/access-log.json

@@ -71,7 +71,8 @@ docker run -p 27017:27017 mongo
 
 4. Выборка данных
 ```
-    total rows searched one by one 1000 times with average time 104.9 mseconds per one search
+    total rows searched one by one 1000 times with average time 104.9 mseconds per one search (one search = one like)
+    total rows searched one by one 995 for user likes with average time 186.1 mseconds per one search (one search = all user likes)
 ```
 5. Выводы
 Mongo обеспечивает необходимые требования по времени поиска и чтения данных.

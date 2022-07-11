@@ -7,6 +7,7 @@ import uvicorn
 from fastapi.applications import FastAPI
 from fastapi.responses import ORJSONResponse
 from kafka import KafkaProducer
+from sentry_sdk.integrations.asgi import SentryAsgiMiddleware
 from starlette.middleware import Middleware
 from starlette_context import plugins as stalette_plugins
 from starlette_context.middleware import RawContextMiddleware
@@ -21,12 +22,17 @@ from core.logger_config import LOGGING
 from db import kafka, mongodb, redis
 from utils.app_exceptions import AppExceptionCaseError, app_exception_handler
 
-sentry_sdk.init(dsn=config.SENTRY_DSN, traces_sample_rate=1)
 request_id_middleware = Middleware(
     RawContextMiddleware, plugins=(stalette_plugins.RequestIdPlugin(),)
 )
+middlewares = [request_id_middleware]
+
+if config.SENTRY_DSN:
+    sentry_sdk.init(dsn=config.SENTRY_DSN, traces_sample_rate=config.SENTRY_RATE)
+    middlewares.append(Middleware(SentryAsgiMiddleware))
 
 logging_config.dictConfig(LOGGING)
+
 app = FastAPI(
     title=config.PROJECT_NAME,
     description="API service for receiving film watch timestamp",
@@ -34,7 +40,7 @@ app = FastAPI(
     docs_url="/api/openapi",
     openapi_url="/api/openapi.json",
     default_response_class=ORJSONResponse,
-    middleware=[request_id_middleware],
+    middleware=middlewares,
 )
 
 
