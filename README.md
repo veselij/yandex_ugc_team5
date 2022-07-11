@@ -50,7 +50,7 @@ docker log film_watch_test
 1. Team-leader [veseij](https://github.com/veselij)
 2. Разработчик [AmirbegKK](https://github.com/AmirbegKK)
 3. Разработчик [Che1](https://github.com/Che1)
-4. Разработчик [soltanat] (https://github.com/soltanat)
+4. Разработчик [soltanat](https://github.com/soltanat)
 
 
 ## Changelog
